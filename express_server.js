@@ -17,7 +17,7 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -52,6 +52,15 @@ app.get("/urls.json", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
+});
+
+app.post("/urls/:shortURL", (req, res) => {
+  let newLongURL = req.body.longURL;
+  if (req.body.longURL.slice(0, 7) !== 'http://' || req.body.longURL.slice(0, 8) !== 'https://') {
+    newLongURL = `https://${req.body.longURL}`;
+  }
+  urlDatabase[req.params.shortURL] = newLongURL;
+  res.redirect(`/urls/${req.params.shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
