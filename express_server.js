@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
+const morgan = require('morgan');
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(morgan('dev'));
 app.set("view engine", "ejs");
 
 const generateRandomString = function() {
@@ -45,6 +47,11 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  // delete urlDatabase[req.params.shortURL];
+  console.log('post done');
 });
 
 app.get("/urls/:shortURL", (req, res) => {
