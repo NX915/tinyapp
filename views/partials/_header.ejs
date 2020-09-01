@@ -11,25 +11,24 @@
           <% } %>
         </a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <% if(username === undefined) {%>
+          <form class="form-inline" action="/login" method="POST" style = "width: auto">
+            <div class="form-group mb-2" style = "margin-top: 0.2em;">
+              <label for="username" style = "visibility: hidden; width: 0px">Username</label>
+              <input class="form-control" type="text" name="username" placeholder="Username" style="width: 200px; margin-left: 0.5em; margin-right: 0.5em">
+              <button type="submit" class="btn btn-outline-light" style = "margin: 0.5em">Login</button>
+            </div>
+          </form>
+        <% } else { %>
+          <form class="form-inline" action="/logout" method="POST" style = "width: auto">
+            <div class="form-group mb-2" style = "margin-top: 0.2em;">
+              <label for="username" style="width: 0px; visibility: hidden;"><%= username %></label>
+              <input type = "submit" class = "btn btn-outline-light" name="logout" value = "Logout" style = "margin: 0.5em">
+            </div>
+          </form>
+        <% } %>
       </div>
     </div>
-    <% if(username === undefined) {%>
-      <form class="form-inline" action="/login" method="POST">
-        <div class="form-group mb-2" style = "margin-left: auto; margin-top: 0.2em;">
-          <label for="username" style = "visibility: hidden; width: 0px">Username</label>
-          <input class="form-control" type="text" name="username" placeholder="Username" style="width: 200px; margin-left: 0.5em; margin-right: 0.5em">
-          <button type="submit" class="btn btn-outline-light">Login</button>
-        </div>
-      </form>
-    <% } else { %>
-      <form class="form-inline" action="/logout" method="POST">
-        <div class="form-group mb-2" style = "margin-left: auto; margin-top: 0.2em;">
-          <label for="username" style="width: 0px; visibility: hidden;"><%= username %></label>
-          <input type = "submit" class = "btn btn-outline-light" name="logout" value = "Logout">
-        </div>
-      </form>
-      <!-- <p style="color: aliceblue; margin-top: 1em"><%= username %></p> -->
-    <% } %>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
