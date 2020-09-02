@@ -57,7 +57,11 @@ app.post("/register", (req, res) => {
   if (req.body.email === '' || req.body.password === '' || findUserWithEmail(req.body.email)) {
     res.sendStatus(400);
   } else {
-    const userID = generateRandomString();
+    let randomString = generateRandomString();
+    while (users[randomString]) {
+      randomString = generateRandomString();
+    }
+    const userID = randomString;
     const { password, email } = req.body;
     const hashedPassword = bcrypt.hashSync(password, 10);
     users[userID] = {
