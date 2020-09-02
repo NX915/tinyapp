@@ -16,10 +16,29 @@ app.set("view engine", "ejs");
 
 
 const checkIsURLOwner = function(req) {
-  if (urlDatabase[req.params.shortURL]) {
-    return req.session.userID === urlDatabase[req.params.shortURL].userID;
+  const { shortURL } = req.params;
+  if (urlDatabase[shortURL]) {
+    return req.session.userID === urlDatabase[shortURL].userID;
   }
   return false;
+};
+
+const runIfRequestValid = function(req, res, cb) {
+  const { shortURL } = req.params;
+  const { userID } = req.session;
+  if (userID) {
+    if (urlDatabase[shortURL]) {
+      if (checkIsURLOwner(req)) {
+        cb();
+      } else {
+        res.sendStatus(403);
+      }
+    } else {
+      res.sendStatus(404);
+    }
+  } else {
+    res.sendStatus(401);
+  }
 };
 
 const generateRandomString = function(length = 6) {
@@ -77,8 +96,10 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
-  if (email === '' || password === '' || getUserByEmail(email, users)) {
+  if (email === '' || password === '') {
     res.sendStatus(400);
+  } else if (getUserByEmail(email, users)) {
+    res.sendStatus(409);
   } else {
     let randomString = generateRandomString();
     while (users[randomString]) {
@@ -100,8 +121,10 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const { password, email } = req.body;
   const userID = getUserByEmail(email, users);
-  if (email === '' || password === '' || userID === undefined || !bcrypt.compareSync(password, users[userID].password)) {
+  if (email === '' || password === '') {
     res.sendStatus(400);
+  } else if (userID === undefined || !bcrypt.compareSync(password, users[userID].password)) {
+    res.sendStatus(401);
   } else {
     req.session.userID = userID;
     res.redirect("/urls");
@@ -152,38 +175,33 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (checkIsURLOwner(req)) {
-    delete urlDatabase[req.params.shortURL];
+  runIfRequestValid(req, res, () => {
+    const { shortURL } = req.params;
+    delete urlDatabase[shortURL];
     res.redirect("/urls");
-  } else {
-    res.sendStatus(400);
-  }
+  });
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  if (checkIsURLOwner(req)) {
+  runIfRequestValid(req, res, () => {
     let newLongURL = req.body.longURL;
     if (req.body.longURL.slice(0, 7) !== 'http://' && req.body.longURL.slice(0, 8) !== 'https://') {
       newLongURL = `https://${req.body.longURL}`;
     }
     urlDatabase[req.params.shortURL].longURL = newLongURL;
     res.redirect(`/urls/${req.params.shortURL}`);
-  } else {
-    res.sendStatus(400);
-  }
+  });
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  if (checkIsURLOwner(req)) {
+  runIfRequestValid(req, res, () => {
     let templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       user: users[req.session['userID']],
     };
     res.render("urls_show", templateVars);
-  } else {
-    res.sendStatus(400);
-  }
+  });
 });
 
 app.listen(PORT, () => {
