@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav" style = "align-items: center;">
+      <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">
           <% if(user === undefined) {%>
             My URLs
@@ -12,23 +12,10 @@
         </a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         <% if(user === undefined) {%>
-        <a class="nav-item nav-link" href="/register">Register Account</a>
-        <% } %>
-        <% if(user === undefined) {%>
-          <form class="form-inline" action="/login" method="GET" style = "width: auto">
-            <div class="form-group mb-2">
-              <label for="username" style = "visibility: hidden; width: 0px">Login</label>
-              <!-- <input class="form-control" type="text" name="username" placeholder="Username" style="width: 200px; margin-left: 0.5em; margin-right: 0.5em"> -->
-              <button type="submit" class="btn btn-outline-light" style = "margin: 0.5em">Login</button>
-            </div>
-          </form>
+          <a class="nav-item nav-link" href="/login">Login</a>
+          <a class="nav-item nav-link" href="/register">Register</a>
         <% } else { %>
-          <form class="form-inline" action="/logout" method="POST" style = "width: auto">
-            <div class="form-group mb-2">
-              <label for="username" style="width: 0px; visibility: hidden;"><%= user.email %></label>
-              <input type = "submit" class = "btn btn-outline-light" name="logout" value = "Logout" style = "margin: 0.5em">
-            </div>
-          </form>
+          <a class="nav-item nav-link" href="/logout">Logout</a>
         <% } %>
       </div>
     </div>
