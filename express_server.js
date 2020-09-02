@@ -22,8 +22,8 @@ const generateRandomString = function() {
 };
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "123456"},
+  "9sm5xK": {longURL: "http://www.google.com", userID: "123456"}
 };
 
 const users = {
@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -107,9 +107,9 @@ app.post("/urls", (req, res) => {
     req.body.longURL = `https://${req.body.longURL}`;
   }
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.cookies.userID};
   console.log(urlDatabase);
-  res.redirect(`/urls`);         // Respond with 'Ok' (we will replace this)
+  res.redirect(`/urls`);
 });
 
 app.get("/urls.json", (req, res) => {
@@ -126,14 +126,14 @@ app.post("/urls/:shortURL", (req, res) => {
   if (req.body.longURL.slice(0, 7) !== 'http://' || req.body.longURL.slice(0, 8) !== 'https://') {
     newLongURL = `https://${req.body.longURL}`;
   }
-  urlDatabase[req.params.shortURL] = newLongURL;
+  urlDatabase[req.params.shortURL].longURL = newLongURL;
   res.redirect(`/urls/${req.params.shortURL}`);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies['userID']],
   };
   res.render("urls_show", templateVars);
