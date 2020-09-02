@@ -58,8 +58,12 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  let templateVars = {user: users[req.session['userID']]};
-  res.render("urls_register", templateVars);
+  if (users[req.session.userID]) {
+    res.redirect("/urls");
+  } else {
+    let templateVars = {user: users[req.session['userID']]};
+    res.render("urls_register", templateVars);
+  }
 });
 
 app.post("/register", (req, res) => {
@@ -100,7 +104,11 @@ app.post("/login", (req, res) => {
 
 app.get("/login", (req, res) => {
   let templateVars = {user: users[req.session['userID']]};
-  res.render("urls_login", templateVars);
+  if (users[req.session.userID]) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", templateVars);
+  }
 });
 
 app.post("/logout", (req, res) => {
