@@ -34,7 +34,7 @@ const urlDatabase = {
 const users = {
   '123456': {
     id: '123456',
-    email: '1@1.com',
+    email: 'test@1.com',
     password: '$2b$10$JyobYzcfUA0wXaxOoU3ZAeVAEd6g2/WneWxdNdye/.C2bEb4hNroa'
   }
 };
