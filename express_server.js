@@ -9,6 +9,15 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 app.set("view engine", "ejs");
 
+const findUserWithEmail = function(email) {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return user;
+    }
+  }
+  return false;
+};
+
 const generateRandomString = function() {
   return Math.random().toString().slice(2, 8);
 };
@@ -18,7 +27,13 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {};
+const users = {
+  '123456': {
+    id: '123456',
+    email: '1@1.com',
+    password: 'dsfsdaf'
+  }
+};
 
 app.get("/", (req, res) => {
   res.redirect("/urls");
@@ -35,24 +50,34 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const userID = generateRandomString();
-  users[userID] = {
-    id: userID,
-    email: req.body.email,
-    password: req.body.password
-  };
-  res.cookie('userID', userID);
-  console.log(users);
-  res.redirect("/urls");
+  if (req.body.email === '' || req.body.password === '' || findUserWithEmail(req.body.email)) {
+    res.sendStatus(400);
+  } else {
+    const userID = generateRandomString();
+    users[userID] = {
+      id: userID,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie('userID', userID);
+    console.log(users);
+    res.redirect("/urls");
+  }
 });
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+  const userID = findUserWithEmail(req.body.email);
+  res.cookie('userID', userID);
   res.redirect("/urls");
 });
 
+app.get("/login", (req, res) => {
+  let templateVars = {user: users[req.cookies['userID']]};
+  res.render("urls_login", templateVars);
+});
+
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('userID');
   res.redirect("/urls");
 });
 

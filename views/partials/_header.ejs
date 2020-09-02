@@ -12,10 +12,13 @@
         </a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         <% if(user === undefined) {%>
-          <form class="form-inline" action="/login" method="POST" style = "width: auto">
+        <a class="nav-item nav-link" href="/register">Register Account</a>
+        <% } %>
+        <% if(user === undefined) {%>
+          <form class="form-inline" action="/login" method="GET" style = "width: auto">
             <div class="form-group mb-2">
-              <label for="username" style = "visibility: hidden; width: 0px">Username</label>
-              <input class="form-control" type="text" name="username" placeholder="Username" style="width: 200px; margin-left: 0.5em; margin-right: 0.5em">
+              <label for="username" style = "visibility: hidden; width: 0px">Login</label>
+              <!-- <input class="form-control" type="text" name="username" placeholder="Username" style="width: 200px; margin-left: 0.5em; margin-right: 0.5em"> -->
               <button type="submit" class="btn btn-outline-light" style = "margin: 0.5em">Login</button>
             </div>
           </form>
