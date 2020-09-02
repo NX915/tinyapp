@@ -83,8 +83,6 @@ app.post("/register", (req, res) => {
       email,
       password: hashedPassword
     };
-    console.log(users);
-    // res.cookie('userID', userID);
     req.session.userID = userID;
     res.redirect("/urls");
   }
@@ -96,7 +94,6 @@ app.post("/login", (req, res) => {
   if (email === '' || password === '' || userID === undefined || !bcrypt.compareSync(password, users[userID].password)) {
     res.sendStatus(400);
   } else {
-    // res.cookie('userID', userID);
     req.session.userID = userID;
     res.redirect("/urls");
   }
@@ -112,7 +109,6 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  // res.clearCookie('userID');
   req.session = null;
   res.redirect("/urls");
 });
@@ -126,10 +122,6 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// });
-
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
@@ -139,13 +131,11 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
   if (req.body.longURL.slice(0, 7) !== 'http://' && req.body.longURL.slice(0, 8) !== 'https://') {
     req.body.longURL = `https://${req.body.longURL}`;
   }
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.session.userID};
-  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
 
