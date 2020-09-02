@@ -32,15 +32,19 @@ const generateRandomString = function(length = 6) {
 };
 
 const urlDatabase = {
-  "b2xVn2": {longURL: "http://www.lighthouselabs.ca", userID: "123456"},
-  "9sm5xK": {longURL: "http://www.google.com", userID: "123456"}
+  "dF3rE2": {longURL: "https://developer.mozilla.org", userID: "123456"},
+  "dsf3Fs": {longURL: "https://www.freecodecamp.org", userID: "123456"},
+  "WdgEfo": {longURL: "https://www.apple.ca", userID: "123456"},
+  "b2xVn2": {longURL: "https://www.lighthouselabs.ca", userID: "123456"},
+  "3IZ5yf": {longURL: "https://www.youtube.ca", userID: "123456"},
+  "9sm5xK": {longURL: "https://www.google.com", userID: "123456"}
 };
 
 const users = {
   '123456': {
     id: '123456',
-    email: 'test@1.com',
-    password: '$2b$10$JyobYzcfUA0wXaxOoU3ZAeVAEd6g2/WneWxdNdye/.C2bEb4hNroa'
+    email: 'test@test.com',
+    password: '$2b$10$Mt4Q947MdJlpMw03bsCOe.7B/tkfi52tdyqqvnc6ziTk5pUc./LRy'
   }
 };
 
