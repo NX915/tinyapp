@@ -106,6 +106,10 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// app.get("/urls.json", (req, res) => {
+//   res.json(urlDatabase);
+// });
+
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
@@ -123,10 +127,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.session.userID};
   console.log(urlDatabase);
   res.redirect(`/urls`);
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
