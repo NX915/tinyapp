@@ -15,7 +15,6 @@ const findUserWithEmail = function(email) {
       return user;
     }
   }
-  return false;
 };
 
 const generateRandomString = function() {
@@ -67,8 +66,12 @@ app.post("/register", (req, res) => {
 
 app.post("/login", (req, res) => {
   const userID = findUserWithEmail(req.body.email);
-  res.cookie('userID', userID);
-  res.redirect("/urls");
+  if (req.body.email === '' || req.body.password === '' || userID === undefined || users[userID].password !== req.body.password) {
+    res.sendStatus(400);
+  } else {
+    res.cookie('userID', userID);
+    res.redirect("/urls");
+  }
 });
 
 app.get("/login", (req, res) => {
