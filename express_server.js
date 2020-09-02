@@ -86,7 +86,11 @@ app.post("/logout", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {user: users[req.cookies['userID']]};
-  res.render("urls_new", templateVars);
+  if (users[req.cookies['userID']] === undefined) {
+    res.redirect("/login");
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/urls", (req, res) => {
