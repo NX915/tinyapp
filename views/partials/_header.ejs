@@ -7,7 +7,7 @@
           <% if(user === undefined) {%>
             My URLs
           <% } else { %>
-            <%= user.email %>'s URLs
+            <%= user.email.split('@')[0] %>'s URLs
           <% } %>
         </a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
@@ -17,6 +17,7 @@
           <a class="nav-item nav-link" href="/login">Login</a>
           <a class="nav-item nav-link" href="/register">Register</a>
         <% } else { %>
+          <a class="nav-item nav-link" href="/urls">Logged in as <%= user.email %></a>
           <form class="form" action="/logout" method="POST">
             <input type = "submit" class="btn btn-outline-light" name="logout" value = "Logout">
           </form>
