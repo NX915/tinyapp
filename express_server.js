@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
+const { getUserByEmail } = require('./helpers');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
@@ -13,14 +14,6 @@ app.use(cookieSession({
 app.use(morgan('dev'));
 app.set("view engine", "ejs");
 
-const getUserByEmail = function(email, data) {
-  for (const user in data) {
-    if (data[user].email === email) {
-      return user;
-    }
-  }
-  return null;
-};
 
 const checkIsURLOwner = function(req) {
   return req.session.userID === urlDatabase[req.params.shortURL].userID;
