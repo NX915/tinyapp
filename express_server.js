@@ -30,7 +30,7 @@ const users = {
   '123456': {
     id: '123456',
     email: '1@1.com',
-    password: 'dsfsdaf'
+    password: '1'
   }
 };
 
@@ -117,26 +117,35 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  if (req.cookies.userID === urlDatabase[req.params.shortURL].userID) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  }
+  res.sendStatus(400);
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  let newLongURL = req.body.longURL;
-  if (req.body.longURL.slice(0, 7) !== 'http://' || req.body.longURL.slice(0, 8) !== 'https://') {
-    newLongURL = `https://${req.body.longURL}`;
+  if (req.cookies.userID === urlDatabase[req.params.shortURL].userID) {
+    let newLongURL = req.body.longURL;
+    if (req.body.longURL.slice(0, 7) !== 'http://' || req.body.longURL.slice(0, 8) !== 'https://') {
+      newLongURL = `https://${req.body.longURL}`;
+    }
+    urlDatabase[req.params.shortURL].longURL = newLongURL;
+    res.redirect(`/urls/${req.params.shortURL}`);
   }
-  urlDatabase[req.params.shortURL].longURL = newLongURL;
-  res.redirect(`/urls/${req.params.shortURL}`);
+  res.sendStatus(400);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user: users[req.cookies['userID']],
-  };
-  res.render("urls_show", templateVars);
+  if (req.cookies.userID === urlDatabase[req.params.shortURL].userID) {
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      user: users[req.cookies['userID']],
+    };
+    res.render("urls_show", templateVars);
+  }
+  res.sendStatus(400);
 });
 
 app.get("/hello", (req, res) => {
