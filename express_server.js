@@ -37,7 +37,12 @@ const users = {
 };
 
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  const { userID } = req.session;
+  if (users[userID]) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -162,10 +167,6 @@ app.get("/urls/:shortURL", (req, res) => {
   } else {
     res.sendStatus(400);
   }
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.listen(PORT, () => {
