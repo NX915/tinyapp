@@ -77,7 +77,7 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const { password, email } = req.body;
   const userID = getUserByEmail(email, users);
-  if (email === '' || password === '' || !userID || !bcrypt.compareSync(password, users[userID].password)) {
+  if (email === '' || password === '' || userID === undefined || !bcrypt.compareSync(password, users[userID].password)) {
     res.sendStatus(400);
   } else {
     // res.cookie('userID', userID);
