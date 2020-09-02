@@ -4,6 +4,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(morgan('dev'));
@@ -34,7 +35,7 @@ const users = {
   '123456': {
     id: '123456',
     email: '1@1.com',
-    password: '1'
+    password: '$2b$10$H4n1///D3KAOPv4VXp7D6Ool0SzjgnCasHJ/KUhHXnmqOaMg5gyHa'
   }
 };
 
@@ -57,13 +58,15 @@ app.post("/register", (req, res) => {
     res.sendStatus(400);
   } else {
     const userID = generateRandomString();
+    const { password, email } = req.body;
+    const hashedPassword = bcrypt.hashSync(password, 10);
     users[userID] = {
       id: userID,
-      email: req.body.email,
-      password: req.body.password
+      email,
+      password: hashedPassword
     };
-    res.cookie('userID', userID);
     console.log(users);
+    res.cookie('userID', userID);
     res.redirect("/urls");
   }
 });
