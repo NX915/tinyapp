@@ -17,6 +17,10 @@ const findUserWithEmail = function(email) {
   }
 };
 
+const checkIsURLOwner = function(req) {
+  return req.cookies.userID === urlDatabase[req.params.shortURL].userID;
+};
+
 const generateRandomString = function() {
   return Math.random().toString().slice(2, 8);
 };
@@ -117,7 +121,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  if (req.cookies.userID === urlDatabase[req.params.shortURL].userID) {
+  if (checkIsURLOwner(req)) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   }
@@ -125,7 +129,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  if (req.cookies.userID === urlDatabase[req.params.shortURL].userID) {
+  if (checkIsURLOwner(req)) {
     let newLongURL = req.body.longURL;
     if (req.body.longURL.slice(0, 7) !== 'http://' || req.body.longURL.slice(0, 8) !== 'https://') {
       newLongURL = `https://${req.body.longURL}`;
@@ -137,7 +141,7 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  if (req.cookies.userID === urlDatabase[req.params.shortURL].userID) {
+  if (checkIsURLOwner(req)) {
     let templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
