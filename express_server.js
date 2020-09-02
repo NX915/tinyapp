@@ -35,7 +35,7 @@ const users = {
   '123456': {
     id: '123456',
     email: '1@1.com',
-    password: '$2b$10$H4n1///D3KAOPv4VXp7D6Ool0SzjgnCasHJ/KUhHXnmqOaMg5gyHa'
+    password: '$2b$10$JyobYzcfUA0wXaxOoU3ZAeVAEd6g2/WneWxdNdye/.C2bEb4hNroa'
   }
 };
 
@@ -73,7 +73,8 @@ app.post("/register", (req, res) => {
 
 app.post("/login", (req, res) => {
   const userID = findUserWithEmail(req.body.email);
-  if (req.body.email === '' || req.body.password === '' || userID === undefined || users[userID].password !== req.body.password) {
+  const { password, email } = req.body;
+  if (email === '' || password === '' || userID === undefined || !bcrypt.compareSync(password, users[userID].password)) {
     res.sendStatus(400);
   } else {
     res.cookie('userID', userID);
