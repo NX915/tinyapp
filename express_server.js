@@ -22,8 +22,13 @@ const checkIsURLOwner = function(req) {
   return false;
 };
 
-const generateRandomString = function() {
-  return Math.random().toString().slice(2, 8);
+const generateRandomString = function(length = 6) {
+  const charString = 'abcdefghijklmnopqretuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+  let randomString = '';
+  for (let i = 0; i < length; i++) {
+    randomString += charString[Math.floor(Math.random() * charString.length)];
+  }
+  return randomString;
 };
 
 const urlDatabase = {
@@ -134,7 +139,10 @@ app.post("/urls", (req, res) => {
   if (req.body.longURL.slice(0, 7) !== 'http://' && req.body.longURL.slice(0, 8) !== 'https://') {
     req.body.longURL = `https://${req.body.longURL}`;
   }
-  const shortURL = generateRandomString();
+  let shortURL = generateRandomString();
+  while (urlDatabase[shortURL]) {
+    shortURL = generateRandomString();
+  }
   urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.session.userID};
   res.redirect(`/urls/${shortURL}`);
 });
