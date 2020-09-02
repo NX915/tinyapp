@@ -16,7 +16,10 @@ app.set("view engine", "ejs");
 
 
 const checkIsURLOwner = function(req) {
-  return req.session.userID === urlDatabase[req.params.shortURL].userID;
+  if (urlDatabase[req.params.shortURL]) {
+    return req.session.userID === urlDatabase[req.params.shortURL].userID;
+  }
+  return false;
 };
 
 const generateRandomString = function() {
@@ -46,8 +49,12 @@ app.get("/", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  const longURL = urlDatabase[req.params.shortURL] ? urlDatabase[req.params.shortURL].longURL : undefined;
+  if (longURL === undefined) {
+    res.sendStatus(404);
+  } else {
+    res.redirect(longURL);
+  }
 });
 
 app.get("/register", (req, res) => {
@@ -125,13 +132,13 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
-  if (req.body.longURL.slice(0, 7) !== 'http://' || req.body.longURL.slice(0, 8) !== 'https://') {
+  if (req.body.longURL.slice(0, 7) !== 'http://' && req.body.longURL.slice(0, 8) !== 'https://') {
     req.body.longURL = `https://${req.body.longURL}`;
   }
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.session.userID};
   console.log(urlDatabase);
-  res.redirect(`/urls`);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -146,7 +153,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   if (checkIsURLOwner(req)) {
     let newLongURL = req.body.longURL;
-    if (req.body.longURL.slice(0, 7) !== 'http://' || req.body.longURL.slice(0, 8) !== 'https://') {
+    if (req.body.longURL.slice(0, 7) !== 'http://' && req.body.longURL.slice(0, 8) !== 'https://') {
       newLongURL = `https://${req.body.longURL}`;
     }
     urlDatabase[req.params.shortURL].longURL = newLongURL;
