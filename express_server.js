@@ -22,7 +22,8 @@ const checkIsURLOwner = function(req) {
   }
   return false;
 };
-
+//check if user is logged in and if url requested is owned by user.
+//If passed, run callback. If not, send back status codes.
 const runIfRequestValid = function(req, res, cb) {
   const { shortURL } = req.params;
   const { userID } = req.session;
@@ -66,7 +67,7 @@ const users = {
     password: '$2b$10$Mt4Q947MdJlpMw03bsCOe.7B/tkfi52tdyqqvnc6ziTk5pUc./LRy'
   }
 };
-
+//redirect to login if user isn't logged in
 app.get("/", (req, res) => {
   const { userID } = req.session;
   if (users[userID]) {
@@ -75,7 +76,7 @@ app.get("/", (req, res) => {
     res.redirect("/login");
   }
 });
-
+//redirect to the full url
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL] ? urlDatabase[req.params.shortURL].longURL : undefined;
   if (longURL === undefined) {
@@ -93,7 +94,7 @@ app.get("/register", (req, res) => {
     res.render("urls_register", templateVars);
   }
 });
-
+//check if register info is invalid or email already exsit, else register as new user
 app.post("/register", (req, res) => {
   const { email, password } = req.body;
   if (email === '' || password === '') {
@@ -102,7 +103,7 @@ app.post("/register", (req, res) => {
     res.sendStatus(409);
   } else {
     let randomString = generateRandomString();
-    while (users[randomString]) {
+    while (users[randomString]) {//new random user id collision prevention
       randomString = generateRandomString();
     }
     const userID = randomString;
@@ -144,7 +145,7 @@ app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
-
+//page for new url, if not logged in, redirect to login
 app.get("/urls/new", (req, res) => {
   let templateVars = {user: users[req.session['userID']]};
   if (users[req.session['userID']] === undefined) {
@@ -153,7 +154,7 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new", templateVars);
   }
 });
-
+//render urls that belong to user
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
@@ -161,19 +162,19 @@ app.get("/urls", (req, res) => {
   };
   res.render('urls_index', templateVars);
 });
-
+//input new url to database
 app.post("/urls", (req, res) => {
   if (req.body.longURL.slice(0, 7) !== 'http://' && req.body.longURL.slice(0, 8) !== 'https://') {
     req.body.longURL = `https://${req.body.longURL}`;
   }
   let shortURL = generateRandomString();
-  while (urlDatabase[shortURL]) {
+  while (urlDatabase[shortURL]) {//url id collision prevention
     shortURL = generateRandomString();
   }
   urlDatabase[shortURL] = {longURL: req.body.longURL, userID: req.session.userID};
   res.redirect(`/urls/${shortURL}`);
 });
-
+//delete exisiting url if permission is correct
 app.post("/urls/:shortURL/delete", (req, res) => {
   runIfRequestValid(req, res, () => {
     const { shortURL } = req.params;
@@ -181,7 +182,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     res.redirect("/urls");
   });
 });
-
+//update exisiting url if permission is correct
 app.post("/urls/:shortURL", (req, res) => {
   runIfRequestValid(req, res, () => {
     let newLongURL = req.body.longURL;
@@ -192,7 +193,7 @@ app.post("/urls/:shortURL", (req, res) => {
     res.redirect(`/urls/${req.params.shortURL}`);
   });
 });
-
+//get exisiting url info if permission is correct
 app.get("/urls/:shortURL", (req, res) => {
   runIfRequestValid(req, res, () => {
     let templateVars = {
